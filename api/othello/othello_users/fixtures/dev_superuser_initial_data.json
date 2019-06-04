@@ -1,0 +1,19 @@
+[
+{
+    "model": "othello_users.othellouser",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$YduEz19GWLkc$ot1BEKV6EaayXTMabrkCLT+OuwMyp4z4W77JkrUo8nw=",
+        "last_login": "2019-05-31T12:28:30.083Z",
+        "is_superuser": true,
+        "username": "admin",
+        "email": "othelloadmin@example.com",
+        "slug": "8da19243191b3b57fabd",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2019-05-30T03:09:35.936Z",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
