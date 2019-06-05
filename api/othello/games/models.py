@@ -333,7 +333,7 @@ class Game(models.Model):
                 if self.valid_reversing(x, y, turn=turn):
                     available_coords.append((x, y))
 
-        return available_coords
+        return tuple(available_coords)
 
     def valid_coord(self, x: int, y: int) -> bool:
         """有効な座標である
