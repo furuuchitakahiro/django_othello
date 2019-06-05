@@ -170,12 +170,12 @@ class Game(models.Model):
         return list(reduce(add, self.board))
 
     @property
-    def board_cell_counts(self) -> Tuple[int, int]:
-        """ボードのセルのカウントプロパティ
+    def scores(self) -> Tuple[int, int]:
+        """スコアプロパティ
 
         Returns:
-            int: プレイヤー 1 のカウント
-            int: プレイヤー 2 のカウント
+            int: プレイヤー 1 のスコア
+            int: プレイヤー 2 のスコア
 
         """
         flatten_board = self.flatten_board
