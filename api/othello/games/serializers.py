@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from games.models import Game
+from games.models import Game, WinnerChoices
 from othello_users.serialiers import ReadOthelloUserSerializer
 from typing import Dict, Any
 
@@ -66,14 +66,16 @@ class ReversingGameSerializer(GameSerializer):
         read_only_fields = GameSerializer.Meta.fields
 
     def update(self, instance: Game, validated_data: Dict[str, Any]):
+        # validate メソットだと instance の情報がないためここで検証
+        if not instance.winner == WinnerChoices.EMPTY.value[0]:
+            raise serializers.ValidationError('有効な座標ではありません')
+        if not instance.valid_reversing(x, y):
+            raise serializers.ValidationError('有効な座標ではありません')
+
         # Todo request の値が None のときに例外を発行
         x = validated_data.pop('x')
         y = validated_data.pop('y')
-
-        if not instance.valid_reversing(x, y):
-            raise serializers.ValidationError('有効な座標ではありません')
         instance.reversing(x, y)
-
         instance.save()
         return instance
 
