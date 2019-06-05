@@ -55,14 +55,20 @@ class WinnerChoices(Enum):
 
     """
 
-    @classmethod
-    def get_max_length(cls) -> int:
-        return 10
-
     PLAYER1 = PlayerChoices.PLAYER1.value
     PLAYER2 = PlayerChoices.PLAYER2.value
     DRAW = ('draw', 'draw')
     EMPTY = ('empty', 'empty')
+
+    @classmethod
+    def get_max_length(cls) -> int:
+        """チョイスで使われる Charfield の文字列の長さを取得
+
+        Returns:
+            int: 文字列の長さ
+
+        """
+        return 10
 
 
 class GameManager(models.Manager):
