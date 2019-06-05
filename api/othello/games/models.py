@@ -452,6 +452,7 @@ class Game(models.Model):
         if turn is None:
             turn = self.turn
 
+        # 反転処理
         for x_direction, y_direction in Directions.get_all_value():
             distance = self.__one_direction_reversing_distance(
                 x, y, x_direction, y_direction, turn=turn
@@ -460,6 +461,21 @@ class Game(models.Model):
                 x, y, x_direction, y_direction, distance, turn=turn
             )
         self.board[y][x] = turn
-        self.turn = PlayerChoices.get_enemy_player(turn)
         self.board_sync()
+
+        # ターン進行
+        enemy: str = PlayerChoices.get_enemy_player(turn)
+        if len(self.get_available_coords(turn=enemy)) > 0:
+            self.turn = enemy
+
+        # ターンプレイヤーが変わらず、自身も反転できる座標が存在しない
+        if turn == self.turn and self.get_available_coords(turn=turn) > 0:
+            p1_score, p2_score = self.scores
+            winner = WinnerChoices.DRAW.value[0]
+            if p1_score > p2_score:
+                winner = WinnerChoices.PLAYER1.value[0]
+            elif p1_score < p2_score:
+                winner = WinnerChoices.PLAYER2.value[0]
+            self.winner = winner
+
         return self
