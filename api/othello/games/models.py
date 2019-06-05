@@ -1,7 +1,7 @@
 from django.db import models
 from othello_users.models import OthelloUser
 from othello_utils.models import PlayerChoices, generate_uniq_slug
-from typing import List, Tuple, Generator
+from typing import List, Tuple, Generator, Optional
 from enum import Enum, unique
 from operator import add
 from functools import reduce
@@ -55,14 +55,20 @@ class WinnerChoices(Enum):
 
     """
 
-    @classmethod
-    def get_max_length(cls) -> int:
-        return 10
-
     PLAYER1 = PlayerChoices.PLAYER1.value
     PLAYER2 = PlayerChoices.PLAYER2.value
     DRAW = ('draw', 'draw')
     EMPTY = ('empty', 'empty')
+
+    @classmethod
+    def get_max_length(cls) -> int:
+        """チョイスで使われる Charfield の文字列の長さを取得
+
+        Returns:
+            int: 文字列の長さ
+
+        """
+        return 10
 
 
 class GameManager(models.Manager):
@@ -170,12 +176,12 @@ class Game(models.Model):
         return list(reduce(add, self.board))
 
     @property
-    def board_cell_counts(self) -> Tuple[int, int]:
-        """ボードのセルのカウントプロパティ
+    def scores(self) -> Tuple[int, int]:
+        """スコアプロパティ
 
         Returns:
-            int: プレイヤー 1 のカウント
-            int: プレイヤー 2 のカウント
+            int: プレイヤー 1 のスコア
+            int: プレイヤー 2 のスコア
 
         """
         flatten_board = self.flatten_board
@@ -262,6 +268,7 @@ class Game(models.Model):
         x_direction: int,
         y_direction: int,
         reversing_distance: int = 0,
+        turn: Optional[str] = None,
     ) -> int:
         """1 方向の反転可能な数を取得
 
@@ -273,13 +280,18 @@ class Game(models.Model):
             x_direction (int): x 軸の進行方向
                 -1 <= x <= 1 の整数を指定
             y_direction (int): y 軸の進行方向
-                -1 <= x <= 0 の整数を指定
+                -1 <= x <= 1 の整数を指定
             reversing_distance (int): はじめの x と y からの距離 ( default 0 )
+            turn (Optional[str]): ターンプレイヤー ( default None )
+                指定なし ( None ) の場合、現在のターンプレイヤーを指定します
 
         Returns:
             int: 反転させた数
 
         """
+        if turn is None:
+            turn = self.turn
+
         moved_x: int = x + x_direction
         moved_y: int = y + y_direction
         # 移動先の座標がボードからはみ出していたら
@@ -291,16 +303,43 @@ class Game(models.Model):
         if current_cell_state == BoardCellStates.EMPTY.value:
             return 0
 
-        if current_cell_state == self.turn:
+        # 移動先の座標が自身だったら
+        if current_cell_state == turn:
             return reversing_distance
 
+        # ここまで通過できる条件は、移動先が相手の場合のみ
         return self.__one_direction_reversing_distance(
             moved_x,
             moved_y,
             x_direction,
             y_direction,
             reversing_distance+1,
+            turn=turn
         )
+
+    def get_available_coords(
+        self, turn: Optional[str] = None
+    ) -> Tuple[Tuple[int, int]]:
+        """有効な反転の起点一覧を取得
+
+        Args:
+            turn (Optional[str]): ターンプレイヤー ( default None )
+                指定なし ( None ) の場合、現在のターンプレイヤーを指定します
+
+        Returns:
+            Tuple[Tuple[int, int]]: 有効な反転の起点一覧
+
+        """
+        if turn is None:
+            turn = self.turn
+
+        available_coords: List[Tuple(int, int)] = []
+        for y, rows in enumerate(self.board):
+            for x, cell in enumerate(rows):
+                if self.valid_reversing(x, y, turn=turn):
+                    available_coords.append((x, y))
+
+        return tuple(available_coords)
 
     def valid_coord(self, x: int, y: int) -> bool:
         """有効な座標である
@@ -319,17 +358,27 @@ class Game(models.Model):
             0 <= y < self.board_size
         )
 
-    def valid_reversing(self, x: int, y: int) -> bool:
+    def valid_reversing(
+        self,
+        x: int,
+        y: int,
+        turn: Optional[str] = None
+    ) -> bool:
         """指定した座標が反転処理可能である
 
         Args:
             x (int): x 軸座標
             y (int): y 軸座標
+            turn (Optional[str]): ターンプレイヤー ( default None )
+                指定なし ( None ) の場合、現在のターンプレイヤーを指定します
 
         Returns:
             bool: True 可能である、False 無効である
 
         """
+        if turn is None:
+            turn = self.turn
+
         # 指定した座標がボード上に存在しない
         if not self.valid_coord(x, y):
             return False
@@ -338,15 +387,12 @@ class Game(models.Model):
         if self.board[y][x] != BoardCellStates.EMPTY.value:
             return False
 
-        total_distance = 0
         for x_direction, y_direction in Directions.get_all_value():
-            total_distance += self.__one_direction_reversing_distance(
-                x,
-                y,
-                x_direction,
-                y_direction
-            )
-        return total_distance > 0
+            if self.__one_direction_reversing_distance(
+                x, y, x_direction, y_direction, turn=turn
+            ) > 0:
+                return True
+        return False
 
     def __one_direction_reversing(
         self,
@@ -354,7 +400,8 @@ class Game(models.Model):
         y: int,
         x_direction: int,
         y_direction: int,
-        reversing_distance: int
+        reversing_distance: int,
+        turn: Optional[str] = None,
     ) -> 'games.models.Game':
         """1 方向の反転処理
 
@@ -364,28 +411,71 @@ class Game(models.Model):
             x_direction (int): x 軸方向
             y_direction (int): y 軸方向
             reversing_distance (int): 反転させる距離
+            turn (Optional[str]): ターンプレイヤー ( default None )
+                指定なし ( None ) の場合、現在のターンプレイヤーを指定します
 
         Returns:
             'games.models.Game': セルを反転させたゲーム
 
         """
+        if turn is None:
+            turn = self.turn
+
         current_x = x
         current_y = y
         for count in range(reversing_distance):
             current_x += x_direction
             current_y += y_direction
-            self.board[current_y][current_x] = self.turn
+            self.board[current_y][current_x] = turn
         return self
 
-    def reversing(self, x: int, y: int) -> 'games.models.Game':
+    def reversing(
+        self,
+        x: int,
+        y: int,
+        turn: Optional[str] = None
+    ) -> 'games.models.Game':
+        """反転処理
+
+        この処理は、ターン進行を含みます。
+
+        Args:
+            x (int): x 軸座標
+            y (int): y 軸座標
+            turn (Optional[str]): ターンプレイヤー ( default None )
+                指定なし ( None ) の場合、現在のターンプレイヤーを指定します
+
+        Returns:
+            'games.models.Game': 反転処理後のゲーム
+
+        """
+        if turn is None:
+            turn = self.turn
+
+        # 反転処理
         for x_direction, y_direction in Directions.get_all_value():
             distance = self.__one_direction_reversing_distance(
-                x, y, x_direction, y_direction
+                x, y, x_direction, y_direction, turn=turn
             )
             self.__one_direction_reversing(
-                x, y, x_direction, y_direction, distance
+                x, y, x_direction, y_direction, distance, turn=turn
             )
-        self.board[y][x] = self.turn
-        self.turn = PlayerChoices.get_enemy_player(self.turn)
+        self.board[y][x] = turn
         self.board_sync()
+
+        # ターン進行
+        enemy: str = PlayerChoices.get_enemy_player(turn)
+        if len(self.get_available_coords(turn=enemy)) > 0:
+            self.turn = enemy
+
+        # ターンプレイヤーが変わらず、自身も反転できる座標が存在しない
+        if turn == self.turn and self.get_available_coords(turn=turn) > 0:
+            p1_score, p2_score = self.scores
+            winner = WinnerChoices.DRAW.value[0]
+            if p1_score > p2_score:
+                winner = WinnerChoices.PLAYER1.value[0]
+            elif p1_score < p2_score:
+                winner = WinnerChoices.PLAYER2.value[0]
+            self.winner = winner
+
         return self
