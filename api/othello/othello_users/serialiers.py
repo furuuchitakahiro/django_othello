@@ -37,7 +37,7 @@ class CreateOthelloUserSerializer(OthelloUserSerializer):
 
     """
 
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(min_length=8, max_length=128)
     is_login = serializers.BooleanField(
         help_text='このフィールドが True の場合ユーザー作成と同時にログインも行います',
         write_only=True,
@@ -61,8 +61,11 @@ class CreateOthelloUserSerializer(OthelloUserSerializer):
         is_login: bool = validated_data.pop('is_login')
         request: 'rest_framework.request.Request' = \
             self.context.get('request', None)
-
-        user: OthelloUser = super().create(validated_data)
+        user: OthelloUser = OthelloUser.objects.create_user(
+            username=validated_data.get('username'),
+            email=validated_data.get('email'),
+            password=validated_data.get('password')
+        )
 
         if is_login and request is not None:
             login(request, user)
