@@ -20,9 +20,10 @@ class AuthViewSets(viewsets.GenericViewSet):
 
         if _action == 'login':
             serializer_class = LoginSerializer
-
-        if _action == 'logout':
+        elif _action == 'logout':
             serializer_class = LogoutSerializer
+        elif _action == 'me':
+            serializer_class = ReadOthelloUserSerializer
 
         return serializer_class
 
@@ -71,3 +72,14 @@ class AuthViewSets(viewsets.GenericViewSet):
             serializer.data,
             status=status.HTTP_200_OK
         )
+
+    @action(
+        detail=False,
+        methods=['get'],
+    )
+    def me(self, request):
+        """me API
+
+        """
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
