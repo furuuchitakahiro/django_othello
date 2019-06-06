@@ -9,6 +9,7 @@ from drf_yasg.views import get_schema_view
 from othello_users.views import OthelloUserViewSets
 from matchings.views import MatchingViewSets
 from games.views import GameViewSets
+from auth.views import AuthViewSets
 import debug_toolbar
 
 
@@ -18,6 +19,7 @@ router = routers.DefaultRouter(trailing_slash=False)
 router.register('othello_users', OthelloUserViewSets)
 router.register('matchings', MatchingViewSets)
 router.register('games', GameViewSets)
+router.register('auth', AuthViewSets, base_name='auth')
 
 # DRF documents
 
