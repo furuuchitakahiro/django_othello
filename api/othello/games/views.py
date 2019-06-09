@@ -22,7 +22,7 @@ class GameViewSets(
     """
 
     lookup_field = 'slug'
-    queryset = Game.objects.all()
+    queryset = Game.objects.with_related_object().all()
 
     def get_serializer_class(self):
         _action = self.action
