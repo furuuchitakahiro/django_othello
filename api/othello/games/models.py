@@ -76,6 +76,17 @@ class GameManager(models.Manager):
 
     """
 
+    def with_related_object(self) -> 'django.db.models.query.QuerySet':
+        """関連オブジェクトを含む
+
+        Returns:
+            'django.db.models.query.QuerySet': Description of returned object.
+
+        """
+        return self \
+            .select_related('player1') \
+            .select_related('player2')
+
 
 class Game(models.Model):
     """ゲーム

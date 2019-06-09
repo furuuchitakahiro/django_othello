@@ -20,7 +20,7 @@ class MatchingViewSets(
     """
 
     lookup_field = 'slug'
-    queryset = Matching.objects.all()
+    queryset = Matching.objects.with_related_object().all()
 
     def get_serializer_class(self):
         _action = self.action

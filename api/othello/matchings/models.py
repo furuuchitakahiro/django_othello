@@ -10,11 +10,25 @@ class MatchingManager(models.Manager):
 
     """
 
+    def with_related_object(self) -> 'django.db.models.query.QuerySet':
+        """関連オブジェクトを含む
+
+        Returns:
+            'django.db.models.query.QuerySet': Description of returned object.
+
+        """
+        return self \
+            .select_related('host') \
+            .select_related('gest') \
+            .select_related('game')
+
 
 class Matching(models.Model):
     """マッチング
 
     """
+
+    objects = MatchingManager()
 
     SLUG_LENGTH = 10
 
