@@ -1,4 +1,5 @@
 from django.db import models
+from caching.base import CachingMixin, CachingManager
 from othello_users.models import OthelloUser
 from othello_utils.models import PlayerChoices, generate_uniq_slug
 from typing import List, Tuple, Generator, Optional
@@ -71,7 +72,7 @@ class WinnerChoices(Enum):
         return 10
 
 
-class GameManager(models.Manager):
+class GameManager(CachingManager):
     """ゲームマネージャー
 
     """
@@ -88,7 +89,7 @@ class GameManager(models.Manager):
             .select_related('player2')
 
 
-class Game(models.Model):
+class Game(models.Model, CachingMixin):
     """ゲーム
 
     """
@@ -132,6 +133,9 @@ class Game(models.Model):
 
     created_at = models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='更新日', auto_now=True)
+
+    class Meta:
+        base_manager_name = 'objects'
 
     def __str__(self) -> str:
         return '{player1} vs {player2}'.format(
