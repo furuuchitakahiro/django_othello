@@ -22,3 +22,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=eeYuji6Cvu4lieY6
       - MYSQL_DATABASE=dev_othello_api_db
+  cache:
+    image: redis:3.2.11
+    expose:
+      - "6379"
