@@ -86,6 +86,21 @@ if DEBUG:
     DATABASES['default']['PASSWORD'] = 'eeYuji6Cvu4lieY6'
 
 
+# Cache
+
+if DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://cache:6379/1",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            },
+            "KEY_PREFIX": "django_othello_api"
+        }
+    }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
