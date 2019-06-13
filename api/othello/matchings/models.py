@@ -1,11 +1,12 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from caching.base import CachingMixin, CachingManager
 from othello_users.models import OthelloUser
 from games.models import Game
 from othello_utils.models import PlayerChoices, generate_uniq_slug
 
 
-class MatchingManager(models.Manager):
+class MatchingManager(CachingManager):
     """マッチングマネージャー
 
     """
@@ -23,7 +24,7 @@ class MatchingManager(models.Manager):
             .select_related('game')
 
 
-class Matching(models.Model):
+class Matching(models.Model, CachingMixin):
     """マッチング
 
     """
@@ -67,6 +68,9 @@ class Matching(models.Model):
 
     created_at = models.DateTimeField(verbose_name='作成日', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='更新日', auto_now=True)
+
+    class Meta:
+        base_manager_name = 'objects'
 
     def __str__(self) -> str:
         return self.host.username
