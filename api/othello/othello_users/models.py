@@ -3,17 +3,17 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import UserManager
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from caching.base import CachingMixin, CachingManager
 from othello_utils.models import generate_uniq_slug
 
 
-class OthelloUserManager(UserManager):
+class OthelloUserManager(UserManager, CachingManager):
     """オセロユーザーマネージャー
 
     """
-    pass
 
 
-class OthelloUser(AbstractBaseUser, PermissionsMixin):
+class OthelloUser(AbstractBaseUser, PermissionsMixin, CachingMixin):
     """オセロユーザー
 
     """
@@ -51,6 +51,9 @@ class OthelloUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    class Meta:
+        base_manager_name = 'objects'
 
     def __str__(self) -> str:
         return self.username
