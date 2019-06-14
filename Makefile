@@ -30,6 +30,9 @@ attach: ## api コンテナに attach する
 mysql:
 	docker-compose run --rm api sh -c "sleep 1 && mysql -u root -h db -peeYuji6Cvu4lieY6"
 
+redis-cli:
+	docker-compose run --rm api sh -c "redis-cli -h cache"
+
 clean_database: ## データベースを初期化
 	docker-compose run --rm api sh -c "sleep 1 && mysql -u root -h db -peeYuji6Cvu4lieY6 -e'drop database dev_othello_api_db;' && mysql -u root -h db -peeYuji6Cvu4lieY6  -e'create database dev_othello_api_db;'"
 
