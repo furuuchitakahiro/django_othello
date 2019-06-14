@@ -438,7 +438,7 @@ class Game(models.Model, CachingMixin):
 
         current_x = x
         current_y = y
-        for count in range(reversing_distance):
+        for _ in range(reversing_distance):
             current_x += x_direction
             current_y += y_direction
             self.board[current_y][current_x] = turn

@@ -10,6 +10,7 @@ services:
     command: sh utils/startapp.dev.sh
     links:
       - db:db
+      - cache:cache
     tty: true
     stdin_open: true
   db:
@@ -24,5 +25,6 @@ services:
       - MYSQL_DATABASE=dev_othello_api_db
   cache:
     image: redis:3.2.11
+    container_name: "othello-api-cache"
     expose:
       - "6379"

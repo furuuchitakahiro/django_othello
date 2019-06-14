@@ -109,3 +109,5 @@ ENV/
 *.sqlite3
 
 .site-packages/
+
+.rediscli_history

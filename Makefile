@@ -34,6 +34,9 @@ attach: ## api コンテナに attach する
 mysql:
 	docker-compose run --rm api sh -c "sleep 1 && mysql -u $(MYSQL_USER) -h db -p$(MYSQL_PASSWORD)"
 
+redis-cli:
+	docker-compose run --rm api sh -c "redis-cli -h cache"
+
 clean_database: ## データベースを初期化
 	docker-compose run --rm api sh -c "sleep 1 && mysql -u $(MYSQL_USER) -h db -p$(MYSQL_PASSWORD) -e'drop database $(MYSQL_DATABASE);' && mysql -u $(MYSQL_USER) -h db -p$(MYSQL_PASSWORD)  -e'create database $(MYSQL_DATABASE);'"
 
