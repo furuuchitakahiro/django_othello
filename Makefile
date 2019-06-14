@@ -31,10 +31,10 @@ bash: ## api コンテナに bash でログイン
 attach: ## api コンテナに attach する
 	docker attach othello-api
 
-mysql:
+mysql: ## MySQL に接続
 	docker-compose run --rm api sh -c "sleep 1 && mysql -u $(MYSQL_USER) -h db -p$(MYSQL_PASSWORD)"
 
-redis-cli:
+redis-cli:  ## Redis に接続
 	docker-compose run --rm api sh -c "redis-cli -h cache"
 
 clean_database: ## データベースを初期化
