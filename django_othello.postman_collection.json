@@ -1,0 +1,346 @@
+{
+	"info": {
+		"_postman_id": "b343932e-5e36-4fa4-93d9-1d3b162fc8d4",
+		"name": "Django Othello",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "othello_users",
+			"item": [
+				{
+					"name": "/othello_users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46228fb5-a435-4c94-b895-8dc207a2fea7",
+								"exec": [
+									"const xCsrfToken = pm.cookies.get('csrftoken')",
+									"pm.environment.set('__x-csrftoken__', xCsrfToken)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"hoge@example.com\",\n\t\"username\": \"hoge\",\n\t\"password\": \"lahSh5DashooGie7\"\n}"
+						},
+						"url": {
+							"raw": "{{API_ROOT}}/othello_users",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"othello_users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/othello_users/:slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ROOT}}/othello_users/5e41457d8b1e726bae3d",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"othello_users",
+								"5e41457d8b1e726bae3d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "matchings",
+			"item": [
+				{
+					"name": "/matchings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ROOT}}/matchings",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"matchings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/matchings/:slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ROOT}}/matchings/4a43ccb832",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"matchings",
+								"4a43ccb832"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/matchings",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{__x-csrftoken__}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boardSize\": 8\n}"
+						},
+						"url": {
+							"raw": "{{API_ROOT}}/matchings",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"matchings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/matchings/:slug",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{__x-csrftoken__}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{API_ROOT}}/matchings/a6401e17ee",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"matchings",
+								"a6401e17ee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "games",
+			"item": [
+				{
+					"name": "/games",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ROOT}}/games",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/games/:slug",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ROOT}}/games/0459876f5c4d4f99fd48",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"games",
+								"0459876f5c4d4f99fd48"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/games/:slug/board",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "{{__x-csrftoken__}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"x\": 3,\n\t\"y\": 2\n}"
+						},
+						"url": {
+							"raw": "{{API_ROOT}}/games/0459876f5c4d4f99fd48/board",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"games",
+								"0459876f5c4d4f99fd48",
+								"board"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "/auth/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4f109666-6af1-4562-b3f1-1ce10edddc3b",
+								"exec": [
+									"const xCsrfToken = pm.cookies.get('csrftoken')",
+									"pm.environment.set('__x-csrftoken__', xCsrfToken)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"hoge@example.com\",\n\t\"password\": \"lahSh5DashooGie7\"\n}"
+						},
+						"url": {
+							"raw": "{{API_ROOT}}/auth/login",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{__x-csrftoken__}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{API_ROOT}}/auth/logout",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ROOT}}/auth/me",
+							"host": [
+								"{{API_ROOT}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
